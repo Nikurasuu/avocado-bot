@@ -25,5 +25,8 @@ avocado is a discord bot written with discord.js
    }
    ```
    
-### Running
-Start the bot by opening a terminal in the root directory and running `npm start`
+### Usage
+Start the bot by opening a terminal in the root directory and running `npm run main`
+
+New commands are deployed using `npm run deploy`
+

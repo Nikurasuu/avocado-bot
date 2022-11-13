@@ -17,10 +17,11 @@ for (const file of commandFiles) {
 
 client.once(Events.ClientReady, c => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
+  console.log(`Serving ${c.guilds.cache.size} guilds`);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-  console.log(interaction.user["username"] + " used the " + interaction.commandName + " command.");
+  console.log("[DEBUG] (userId: " + interaction.user["id"] + ") (guildId: " + interaction.guild.id + ") commandName: " + interaction.commandName);
   if (!interaction.isChatInputCommand()) return;
 
   const command = client.commands.get(interaction.commandName);
@@ -30,6 +31,7 @@ client.on(Events.InteractionCreate, async interaction => {
   try {
     await command.execute(interaction);
   } catch (error) {
+    console.log("[ERROR] (userId: " + interaction.user["id"] + ") (guildId: " + interaction.guild.id + ") commandName: " + interaction.commandName);
     console.error(error);
     await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
   }
