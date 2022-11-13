@@ -1,10 +1,10 @@
 {
   "name": "discord-bot",
   "version": "1.0.0",
-  "main": "hello.js",
+  "main": "main.js",
   "scripts": {
     "test": "jest",
-    "main": "node hello.js",
+    "main": "node main.js",
     "deploy": "node deploy-commands.js"
   },
   "keywords": [],
