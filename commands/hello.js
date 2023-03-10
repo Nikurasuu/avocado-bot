@@ -1,6 +1,6 @@
-const {SlashCommandBuilder} = require('discord.js');
+import { SlashCommandBuilder } from '@discordjs/builders';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('hello')
     .setDescription('Replies with Hello world!'),
