@@ -21,7 +21,8 @@ avocado is a discord bot written with discord.js
    {
      "token": "YOUR_TOKEN_HERE",
      "clientID": "YOUR_CLIENT_ID_HERE",
-     "guildID": "YOUR_GUILD_ID_HERE"
+     "guildID": "YOUR_GUILD_ID_HERE",
+     "openaiKey": "YOUR_OPENAI_API_KEY_HERE"
    }
    ```
    
