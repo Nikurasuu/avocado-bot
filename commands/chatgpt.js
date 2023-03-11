@@ -21,6 +21,6 @@ export default {
         .setName('chatgpt')
         .setDescription('Replies with the power of GPT-3!'),
     async execute(interaction) {
-        await interaction.reply(askQuestion(question));
+        await interaction.reply('Hello ChatGPT!');
     }
 }
