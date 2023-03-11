@@ -2,9 +2,9 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('hello')
-    .setDescription('Replies with Hello world!'),
+    .setName('test')
+    .setDescription('test'),
   async execute(interaction) {
-    await interaction.reply('Hello world!');
+    await interaction.reply('working.');
   }
 }

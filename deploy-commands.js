@@ -1,34 +1,46 @@
-const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
-const fs = require('node:fs');
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
+import config from "./config.json" assert { type: "json" };
+import fs from 'node:fs';
+import moment from "moment";
+
+const token = config.token;
+const guildId = config.guildId;
+const clientId = config.clientId;
+
+const rest = new REST({ version: '10' }).setToken(token);
+const log = x => { console.log(`[${moment().format("DD-MM-YYYY HH:mm:ss")}] ${x}`) };
+
+log(`Loaded guildId ${guildId}`);
+log(`Loaded clientId ${clientId}`);
 
 const commands = [];
-// Grab all the command files from the commands directory you created earlier
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  commands.push(command.data.toJSON());
+    console.log(`Loading command ${file}`);
+    try {
+        const { default: command } = await import(`./commands/${file}`);
+        commands.push(command.data.toJSON());
+    } catch (error) {
+        console.log(`Error loading command ${file}`);
+        console.error(error);
+    }
 }
 
-// Construct and prepare an instance of the REST module
-const rest = new REST({ version: '10' }).setToken(token);
+const commandData = commands.map(command => command);
 
-// and deploy your commands!
 (async () => {
   try {
-    console.log(`Started refreshing ${commands.length} application (/) commands.`);
+    log('Started refreshing application (/) commands.');
 
-    // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(
-        Routes.applicationGuildCommands(clientId, guildId),
-        { body: commands },
+    await rest.put(
+      Routes.applicationGuildCommands(clientId, guildId),
+      { body: commandData },
     );
 
-    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    log('Successfully reloaded application (/) commands.');
   } catch (error) {
-    // And of course, make sure you catch and log any errors!
     console.error(error);
   }
 })();

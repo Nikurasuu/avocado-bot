@@ -1,40 +1,49 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
+import { Client, GatewayIntentBits, Collection } from "discord.js";
+const client = new Client({intents: [GatewayIntentBits.Guilds]});
+import config from "./config.json" assert { type: "json" };
+import { readdirSync } from "fs";
+import moment from "moment";
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const token = config.token;
 
 client.commands = new Collection()
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+client.slashcommands = new Collection()
+client.commandaliases = new Collection()
 
-for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file);
-  const command = require(filePath);
-  client.commands.set(command.data.name, command);
-}
+const log = x => { console.log(`[${moment().format("DD-MM-YYYY HH:mm:ss")}] ${x}`) };
 
-client.once(Events.ClientReady, c => {
-  console.log(`Ready! Logged in as ${c.user.tag}`);
-  console.log(`Serving ${c.guilds.cache.size} guilds`);
-});
+const slashcommands = [];
+readdirSync('./commands/').forEach(async file => {
+  const command = await import(`./commands/${file}`).then(c => c.default)
+  slashcommands.push(command.data.toJSON());
+  client.slashcommands.set(command.data.name, command);
+})
 
-client.on(Events.InteractionCreate, async interaction => {
-  console.log("[DEBUG] (userId: " + interaction.user["id"] + ") (guildId: " + interaction.guild.id + ") commandName: " + interaction.commandName);
-  if (!interaction.isChatInputCommand()) return;
+client.on("ready", async () => {
+    log(`${client.user.username} is ready!`);
+})
 
-  const command = client.commands.get(interaction.commandName);
-
+client.on("interactionCreate", async interaction => {
+  log(`${interaction.user.tag} in #${interaction.guild} triggered ${interaction.commandName}`);
+  if (!interaction.isCommand()) return;
+  const command = client.slashcommands.get(interaction.commandName);
   if (!command) return;
-
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.log("[ERROR] (userId: " + interaction.user["id"] + ") (guildId: " + interaction.guild.id + ") commandName: " + interaction.commandName);
     console.error(error);
     await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
   }
 });
 
-client.login(token);
+process.on("unhandledRejection", e => { 
+   console.log(e)
+ }) 
+process.on("uncaughtException", e => { 
+   console.log(e)
+ })  
+process.on("uncaughtExceptionMonitor", e => { 
+   console.log(e)
+ })
+
+client.login(token)
