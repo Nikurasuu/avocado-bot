@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "main": "node main.js",
-    "deploy": "node deploy-commands.js"
+    "deploy": "node deploy-commands.js",
+    "delete": "node delete-commands.js"
   },
   "keywords": [],
   "author": "",
