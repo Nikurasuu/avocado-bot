@@ -16,7 +16,7 @@ async function sendPrompt(prompt) {
   });
 
   const response = await api.sendMessage(prompt);
-  log('Response: ' + response.text);
+  log('received response.');
   return response.text;
 }
 
