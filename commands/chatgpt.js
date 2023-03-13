@@ -30,8 +30,9 @@ export default {
   async execute(interaction) {
     const prompt = interaction.options.getString('prompt');
     try {
+      await interaction.reply('Fetching response from OpenAI...');
       const response = await sendPrompt(prompt);
-      await interaction.reply(response);
+      await interaction.editReply(response);
     } catch (error) {
       console.error(error);
       await interaction.reply('There was an error while processing your request.');
