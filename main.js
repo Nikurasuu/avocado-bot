@@ -24,10 +24,6 @@ client.on("ready", async () => {
 
     // Set the client user's activity
     client.user.setActivity("with slash commands", { type: "PLAYING" });
-
-    //get all guilds 
-    const guilds = client.guilds.cache.map(guild => guild.id);
-    log(`Loaded guilds ${guilds}`);
 })
 
 client.on("interactionCreate", async interaction => {
