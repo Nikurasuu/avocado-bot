@@ -2,22 +2,38 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import config from "./config.json" assert { type: "json" };
 import moment from "moment";
+import { Client, GatewayIntentBits } from "discord.js";
+const client = new Client({intents: [GatewayIntentBits.Guilds]});
 
 const token = config.token;
-const guildId = config.guildId;
 const clientId = config.clientId;
 
 const rest = new REST({ version: '10' }).setToken(token);
 const log = x => { console.log(`[${moment().format("DD-MM-YYYY HH:mm:ss")}] ${x}`) };
 
-log(`Loaded guildId ${guildId}`);
-log(`Loaded clientId ${clientId}`);
+client.login(token);
+client.on("ready", async () => {
+  log(`${client.user.username} is ready!`);
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
-	.then(() => console.log('Successfully deleted all guild commands.'))
-	.catch(console.error);
+  const guilds = client.guilds.cache.map(guild => guild.id);
+  log(`Loaded guilds ${guilds}`);
 
-// for global commands
-rest.put(Routes.applicationCommands(clientId), { body: [] })
-	.then(() => console.log('Successfully deleted all application commands.'))
-	.catch(console.error);
+  log(`Loaded clientId ${clientId}`);
+
+  (async () => {
+    try {
+      log('Started deleting application (/) commands.');
+      for (const guildId of guilds) {
+        log(`Refreshing application (/) commands for guild ${guildId}`);
+        await rest.put(
+          Routes.applicationGuildCommands(clientId, guildId),
+          { body: [ ] },
+        );
+      }   
+      log('Successfully deleted application (/) commands.');
+      process.exit(0);
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+})
